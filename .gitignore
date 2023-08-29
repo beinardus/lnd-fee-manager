@@ -1,10 +1,9 @@
 # NodeJS specific #
-.nyc_output/
-coverage/
 node_modules/
-output/
-npm-debug.log
 package-lock.json
-test/*.log
+
+lnd/*.macaroon
+lnd/*.cert
+
 config/*
 !config/default.json

@@ -6,7 +6,7 @@ import logger from "./winston-plugin.js";
 
 const GRPC_LOCATION = process.env.GRPC_LOCATION || 'dutchbtc.ddns.net:10009';
 const MACAROON_PATH = process.env.MACAROON_PATH || './lnd/admin.macaroon';
-const TLS_CERT = process.env.TLS_CERT || './lnd/tls.cert';
+const TLS_CERT_PATH = process.env.TLS_CERT_PATH || './lnd/tls.cert';
 
 const loaderOptions = {
   keepCase: true,
@@ -21,7 +21,7 @@ const lnrpc = grpc.loadPackageDefinition(packageDefinition).lnrpc;
 const routerrpc = grpc.loadPackageDefinition(packageDefinition).routerrpc;
 
 process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
-const tlsCert = fs.readFileSync(TLS_CERT);
+const tlsCert = fs.readFileSync(TLS_CERT_PATH);
 const sslCreds = grpc.credentials.createSsl(tlsCert);
 const macaroon = fs.readFileSync(MACAROON_PATH).toString('hex');
 const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args, callback) {
