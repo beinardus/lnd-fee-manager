@@ -5,5 +5,7 @@ package-lock.json
 lnd/*.macaroon
 lnd/*.cert
 
+*.db
+
 config/*
 !config/default.json

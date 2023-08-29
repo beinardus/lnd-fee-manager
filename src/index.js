@@ -1,104 +1,69 @@
-import fs from 'fs';
-import grpc from '@grpc/grpc-js';
-import protoLoader from '@grpc/proto-loader';
-import updateFees from './update-fees.js';
+import { client_router } from "./grpc-endpoint-provider.js";
+import updateFees from "./update-fees.js";
 import logger from "./winston-plugin.js";
+import {
+  listChannels,
+  createChannelDict,
+  getAffectedChannels,
+  createChannelSummary,
+} from "./channel-repository.js";
+import { setupDatabase, complementDatabase } from "./database-manager.js";
 
-const GRPC_LOCATION = process.env.GRPC_LOCATION || 'dutchbtc.ddns.net:10009';
-const MACAROON_PATH = process.env.MACAROON_PATH || './lnd/admin.macaroon';
-const TLS_CERT_PATH = process.env.TLS_CERT_PATH || './lnd/tls.cert';
+const updateLiquidity = async (channelDict) => {
+  logger.debug("Update Liquidity");
+  const newValues = await listChannels();
+  const affectedChannels = getAffectedChannels(channelDict, newValues);
 
-const loaderOptions = {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
+  await updateAffectedChannels(affectedChannels);
+  for (const nv of affectedChannels) {
+    const chanSum = createChannelSummary(nv);
+    channelDict[nv.chan_id] = chanSum;
+  }
+
+  await updateFees();
 };
-
-const packageDefinition = protoLoader.loadSync(['./lnd/lightning.proto', './lnd/router.proto'], loaderOptions);
-const lnrpc = grpc.loadPackageDefinition(packageDefinition).lnrpc;
-const routerrpc = grpc.loadPackageDefinition(packageDefinition).routerrpc;
-
-process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
-const tlsCert = fs.readFileSync(TLS_CERT_PATH);
-const sslCreds = grpc.credentials.createSsl(tlsCert);
-const macaroon = fs.readFileSync(MACAROON_PATH).toString('hex');
-const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args, callback) {
-  let metadata = new grpc.Metadata();
-  metadata.add('macaroon', macaroon);
-  callback(null, metadata);
-});
-const creds = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
-const client_lightning = new lnrpc.Lightning(GRPC_LOCATION, creds);
-const client_router = new routerrpc.Router(GRPC_LOCATION, creds);
-
-const listChannels = () => {
-  return new Promise((resolve, reject) => {
-    let request = {
-      peer_alias_lookup: true
-    };
-
-    client_lightning.listChannels(request, function(err, response) {
-      if (err) 
-        reject(err);
-      else
-        resolve(response.channels);
-    });
-  });
-};
-
-let updateTimerId = null;
 
 const run = async () => {
-  // keep track of the channels using a dictionary
-  const myChannelIDs = (await listChannels()).reduce((a,c) => {
-    a[c.chan_id] = {
-      peer_alias: c.peer_alias,
-      local_balance: parseInt(c.local_balance),
-      remote_balance: parseInt(c.remote_balance)
-    }; return a}, {});
+  let updateTimerId = null;
 
-  logger.info("Channels:", {object: myChannelIDs});
+  const myChannelDict = await (async () => {
+    await setupDatabase();
+    const channels = await listChannels();
 
-  const updateLiquidity = async () => {
-    logger.debug("Update Liquidity");
-    const newValues = await listChannels();
-    for (const nv of newValues) {
-      // TODO: store db      
-      const myChannel = myChannelIDs[nv.chan_id];
-      myChannel.local_balance = nv.local_balance;
-      myChannel.remote_balance = nv.remote_balance;
-    }
+    // update changes that were made before this service was started
+    await complementDatabase(channels);
 
-    await updateFees();
-  };
+    // keep track of the channels using a dictionary
+    return createChannelDict(channels);
+  })();
+
+  logger.info("Channels:", { object: myChannelDict });
 
   let call = client_router.subscribeHtlcEvents({});
-  call.on('data', function(response) {
+  call.on("data", function (response) {
     // only the settle_event contains the preimage
     // so we know at that moment that the transaction was successful
-    if (response.event == 'settle_event')
-    {
-      var myChannel = myChannelIDs[response.incoming_channel_id] || myChannelIDs[response.outgoing_channel_id];
+    if (response.event == "settle_event") {
+      var myChannel =
+        myChannelDict[response.incoming_channel_id] ||
+        myChannelDict[response.outgoing_channel_id];
       if (myChannel) {
-        if (updateTimerId)
-          clearTimeout(updateTimerId);
+        if (updateTimerId) clearTimeout(updateTimerId);
 
         // give 10s to allow bursts (amp?)
-        updateTimerId = setTimeout(updateLiquidity, 10000);
-        logger.debug("Raw response:", {object: response});
-        logger.info("Channel:", {object: myChannel});
+        updateTimerId = setTimeout(() => updateLiquidity(myChannelDict), 10000);
+        logger.debug("Raw response:", { object: response });
+        logger.info("Channel:", { object: myChannel });
       }
     }
   });
-  
-  call.on('status', function(status) {
+
+  call.on("status", function (status) {
     // The current status of the stream.
   });
-  call.on('end', function() {
+  call.on("end", function () {
     // The server has closed the stream.
   });
-}
+};
 
 run();
