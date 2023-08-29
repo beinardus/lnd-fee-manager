@@ -1,12 +1,12 @@
 import fs from 'fs';
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
-import updateFees from './update-fees-dockerode.js';
+import updateFees from './update-fees.js';
 import logger from "./winston-plugin.js";
 
-const GRPC_HOST = 'dutchbtc.ddns.net:10009'
-const MACAROON_PATH = './lnd/admin.macaroon'
-const TLS_PATH = './lnd/tls.cert'
+const GRPC_LOCATION = process.env.GRPC_LOCATION || 'dutchbtc.ddns.net:10009';
+const MACAROON_PATH = process.env.MACAROON_PATH || './lnd/admin.macaroon';
+const TLS_CERT = process.env.TLS_CERT || './lnd/tls.cert';
 
 const loaderOptions = {
   keepCase: true,
@@ -21,7 +21,7 @@ const lnrpc = grpc.loadPackageDefinition(packageDefinition).lnrpc;
 const routerrpc = grpc.loadPackageDefinition(packageDefinition).routerrpc;
 
 process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
-const tlsCert = fs.readFileSync(TLS_PATH);
+const tlsCert = fs.readFileSync(TLS_CERT);
 const sslCreds = grpc.credentials.createSsl(tlsCert);
 const macaroon = fs.readFileSync(MACAROON_PATH).toString('hex');
 const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args, callback) {
@@ -30,8 +30,8 @@ const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args
   callback(null, metadata);
 });
 const creds = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
-const client_lightning = new lnrpc.Lightning(GRPC_HOST, creds);
-const client_router = new routerrpc.Router(GRPC_HOST, creds);
+const client_lightning = new lnrpc.Lightning(GRPC_LOCATION, creds);
+const client_router = new routerrpc.Router(GRPC_LOCATION, creds);
 
 const listChannels = () => {
   return new Promise((resolve, reject) => {

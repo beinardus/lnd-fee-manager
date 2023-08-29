@@ -13,8 +13,6 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.9.1",
     "@grpc/proto-loader": "^0.7.9",
-    "config": "^3.3.9",
-    "dockerode": "^3.3.5",
     "promised-sqlite3": "^2.1.0",
     "sqlite3": "^5.1.6",
     "winston": "^3.10.0"
