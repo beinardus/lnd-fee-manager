@@ -7,7 +7,11 @@ import {
   getAffectedChannels,
   createChannelSummary,
 } from "./channel-repository.js";
-import { setupDatabase, complementDatabase } from "./database-manager.js";
+import {
+  setupDatabase,
+  complementDatabase,
+  updateAffectedChannels,
+} from "./database-manager.js";
 
 const updateLiquidity = async (channelDict) => {
   logger.debug("Update Liquidity");
