@@ -48,16 +48,21 @@ const run = async () => {
     // only the settle_event contains the preimage
     // so we know at that moment that the transaction was successful
     if (response.event == "settle_event") {
-      var myChannel =
-        myChannelDict[response.incoming_channel_id] ||
-        myChannelDict[response.outgoing_channel_id];
-      if (myChannel) {
+      var myChannels = [
+        response.incoming_channel_id,
+        response.outgoing_channel_id,
+      ]
+        .map((chan_id) => myChannelDict[chan_id])
+        .filter((c) => c);
+
+      if (myChannels.length) {
         if (updateTimerId) clearTimeout(updateTimerId);
 
         // give 10s to allow bursts (amp?)
         updateTimerId = setTimeout(() => updateLiquidity(myChannelDict), 10000);
         logger.debug("Raw response:", { object: response });
-        logger.info("Channel:", { object: myChannel });
+
+        for (const c of myChannels) logger.info("Channel:", { object: c });
       }
     }
   });
