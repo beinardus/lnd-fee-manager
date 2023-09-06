@@ -1,0 +1,12 @@
+# NodeJS specific #
+node_modules/
+package-lock.json
+
+lnd/*.macaroon
+lnd/*.crt
+lnd/*.pem
+
+*.db
+
+config/*
+!config/default.json
