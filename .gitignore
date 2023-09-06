@@ -2,9 +2,8 @@
 node_modules/
 package-lock.json
 
-lnd/*.macaroon
-lnd/*.crt
-lnd/*.pem
+lnd/*
+!lnd/*.proto
 
 *.db
 
