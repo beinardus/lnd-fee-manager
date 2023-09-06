@@ -1,0 +1,21 @@
+manifestVersion: 1
+id: lnd-fee-manager
+category: finance
+name: LND Fee Manager
+version: "1.0.0"
+tagline: Nothing in life is free!
+description: >-
+  Service that utilizes LND gRPC events to record channel change history and applies charge-lnd fee updates.
+releaseNotes: >-
+  My first Umbrel fiddle. Trying to get this to work.
+developer: DutchBTC
+website: https://dutchbtc.ddns.net
+dependencies:
+  - bitcoin
+  - lightning
+repo: https://github.com/beinardus/lnd-fee-manager
+support: https://github.com/beinardus/lnd-fee-manager/discussions
+port: 1729
+path: ""
+defaultUsername: ""
+defaultPassword: ""

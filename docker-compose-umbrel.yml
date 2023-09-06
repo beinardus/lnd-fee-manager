@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  lnd-fee-manager:
+    image: lnd-fee-manager
+    build: ${APP_LND_FEE_MANAGER_ROOT}/
+    container_name: lnd-fee-manager
+    user: "1000:1000"
+    restart: on-failure
+    volumes:
+      - ${APP_LND_FEE_MANAGER_ROOT}/data:/app
+      - ${APP_LIGHTNING_NODE_DATA_DIR}:/home/charge/.lnd
+    environment:
+      - DATABASE_PATH=/app/database.db
+      - GRPC_LOCATION=${LND_IP}:${LND_GRPC_PORT}
+      - MACAROON_PATH=/home/charge/.lnd/data/chain/bitcoin/mainnet/admin.macaroon
+      - TLS_CERT_PATH=/home/charge/.lnd/tls.cert
