@@ -18,7 +18,7 @@ Closed channels are kept in the database.
 
 ## Supported Lightning implementation
 
-- LND (LND with REST API)
+- LND (LND with gRPC API)
 
 ## Installation
 
