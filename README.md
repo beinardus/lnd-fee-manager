@@ -18,7 +18,7 @@ Closed channels are kept in the database.
 
 ## Supported Lightning implementation
 
-- LND (LND with REST API)
+- LND (LND with gRPC API)
 
 ## Installation
 
@@ -74,7 +74,7 @@ In `.env` config file or `docker-compose` environment:
 
 ### Installation in Umbrel
 
-Locate where apps are installed in Umbrel. Lets call it `UMBREL_ROOT`. Lets assume the directory structure is fixed. We will find the depicted structure:
+Locate where Umbrel is installed. Lets call it `UMBREL_ROOT`. Lets assume the directory structure is fixed. We will find the depicted structure:
 
 - UMBREL_ROOT
   - scripts
