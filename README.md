@@ -9,7 +9,7 @@ Several configuration files (charge.config) can be found in blogs of the Lightni
 ## Inner workings
 
 Standing on the shoulders of [accumulator](https://github.com/accumulator). the creator of charge-lnd, this is mainly a wrapper around his work. Where he uses time intervals (scheduling in CRON), this version listens to the gRPC events on the LND gRPC interface. This enables very fast updates, without excessive polling. It also enables easy integration in Docker.  
-In additional, channel updates are stored in a Sqlite database, to analyse activity afterwards.
+In addition, channel updates are stored in a Sqlite database, to analyse activity afterwards.
 
 When an update event (payment or forward transaction) is triggered, a short interval of 10s (hardcoded atm) is build in to await additional updates. This is implemented using a sliding window pattern. Then (after 10s of inactivity) all channels are retrieved and checked for updates. Updates are then stored in the database and `charge-lnd` is called.
 
@@ -90,7 +90,7 @@ Locate where Umbrel is installed. Lets call it `UMBREL_ROOT`. Lets assume the di
             - _admin.macaroon_
     - lnd-fee-manager
 
-`lnd-fee-manager` does not yet exists, but we create it now:
+`lnd-fee-manager` does not yet exist, but we create it now:
 
 ```shell
 # set UMBREL_ROOT for convenience (EDIT THIS)
