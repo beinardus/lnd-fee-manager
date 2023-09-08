@@ -6,7 +6,7 @@ services:
     restart: on-failure
     volumes:
       - /data/charge-lnd:/app
-      - /data/lnd-data:/home/charge/.lnd
+      - /data/lnd-data:/home/charge/.lnd:ro
     environment:
       - DATABASE_PATH=/app/database.db
       - LND_DIR=/home/charge/.lnd
