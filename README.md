@@ -90,7 +90,7 @@ Locate where Umbrel is installed. Lets call it `UMBREL_ROOT`. Lets assume the di
             - _admin.macaroon_
     - lnd-fee-manager
 
-`lnd-fee-manager` does not yet exists, but we create it now:
+`lnd-fee-manager` does not yet exist, but we create it now:
 
 ```shell
 # set UMBREL_ROOT for convenience (EDIT THIS)
