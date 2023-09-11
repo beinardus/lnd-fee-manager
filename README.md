@@ -42,6 +42,7 @@ In `.env` config file or `docker-compose` environment:
 | MACAROON_PATH | path to a LND macaroon with sufficient rights | "./lnd/admin.macaroon"    |
 | TLS_CERT_PATH | path to the TLS certificate of LND            | "./lnd/tls.cert"          |
 | LOG_LEVEL     | Log level (winston logging)                   | "info"                    |
+| UPDATE_CMD    | Script to be executed on channel updates      | "run-charge"              |
 
 > [!NOTE]
 > LND_DIR is obsolete when using TLS_CERT_PATH and MACROON_PATH
@@ -114,6 +115,7 @@ You are now able to trace the output using:
 `docker logs --follow -n50 lnd-fee-manager`
 
 ### Typical log output
+
 ```
 2023-09-07 13:21:20 info: Channels:
 {
@@ -138,6 +140,7 @@ You are now able to trace the output using:
   max_htlc_msat:   99000000 ➜ 54450000
 -- charge-lnd finished --
 ```
+
 ### Points of concern
 
 - RFC 6066 DeprecationWarning in Umbrel

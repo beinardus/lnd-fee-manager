@@ -1,7 +1,6 @@
 import { exec } from "child_process";
 import logger from "./winston-plugin.js";
-
-const UPDATE_CMD = process.env.UPDATE_CMD || "run-charge";
+import { UPDATE_CMD } from "./settings-provider.js";
 
 const execPromise = (command) => {
   return new Promise((resolve, reject) => {
