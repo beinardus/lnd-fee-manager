@@ -158,7 +158,13 @@ select c.chan_id, c.peer_alias, u.local_balance, u.remote_balance
     channel_update u1
     join (
       select u2.chan_id, max(u2.id) as id from channel_update u2
-      group by u2.chan_id) um on um.chan_id = u1.chan_id and um.id = u1.id) u on u.chan_id = c.chan_id
+      group by u2.chan_id) um on um.chan_id = u1.chan_id and um.id = u1.id) u on u.chan_id = c.chan_id;
+```
+```
+// Channel updates in a (human readable) time interval
+select u.id, u.chan_id, u.local_balance, u.remote_balance, datetime(time/1000, 'unixepoch') as time2
+from channel_update u
+where time2 between '2023-10-06 13:00' and '2023-10-06 21:00';
 ```
 
 ## Advanced configuration
