@@ -166,6 +166,19 @@ select u.id, u.chan_id, u.local_balance, u.remote_balance, datetime(time/1000, '
 from channel_update u
 where time2 between '2023-10-06 13:00' and '2023-10-06 21:00';
 ```
+```
+// Balance updates (compare to previous balance)
+select u1.id, u1.chan_id, u1.local_balance, u2.local_balance, (u1.local_balance - u2.local_balance) as delta
+from (
+  select a.chan_id, a.id, max(b.id) as prev_id
+  from channel_update a
+  join channel_update b on a.chan_id = b.chan_id and b.id < a.id
+  group by a.chan_id, a.id
+) u
+join channel_update u1 on u1.id = u.prev_id
+join channel_update u2 on u2.id = u.id
+order by u1.id;
+```
 
 ## Advanced configuration
 
