@@ -112,7 +112,7 @@ sudo $UMBREL_ROOT/scripts/app compose lnd-fee-manager up -d
 ```
 
 You are now able to trace the output using:  
-`docker logs --follow -n50 lnd-fee-manager`
+`docker logs --follow -n 50 lnd-fee-manager`
 
 ### Typical log output
 
