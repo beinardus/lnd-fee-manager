@@ -113,7 +113,7 @@ sudo $UMBREL_ROOT/scripts/app compose lnd-fee-manager up -d
 ```
 
 You are now able to trace the output using:  
-`docker logs --follow -n50 lnd-fee-manager`
+`docker logs --follow -n 50 lnd-fee-manager`
 
 ### Typical log output
 
@@ -159,7 +159,26 @@ select c.chan_id, c.peer_alias, u.local_balance, u.remote_balance
     channel_update u1
     join (
       select u2.chan_id, max(u2.id) as id from channel_update u2
-      group by u2.chan_id) um on um.chan_id = u1.chan_id and um.id = u1.id) u on u.chan_id = c.chan_id
+      group by u2.chan_id) um on um.chan_id = u1.chan_id and um.id = u1.id) u on u.chan_id = c.chan_id;
+```
+```
+// Channel updates in a (human readable) time interval
+select u.id, u.chan_id, u.local_balance, u.remote_balance, datetime(time/1000, 'unixepoch') as time2
+from channel_update u
+where time2 between '2023-10-06 13:00' and '2023-10-06 21:00';
+```
+```
+// Balance updates (compare to previous balance)
+select u1.id, u1.chan_id, u1.local_balance, u2.local_balance, (u1.local_balance - u2.local_balance) as delta
+from (
+  select a.chan_id, a.id, max(b.id) as prev_id
+  from channel_update a
+  join channel_update b on a.chan_id = b.chan_id and b.id < a.id
+  group by a.chan_id, a.id
+) u
+join channel_update u1 on u1.id = u.prev_id
+join channel_update u2 on u2.id = u.id
+order by u1.id;
 ```
 
 ## Advanced configuration
