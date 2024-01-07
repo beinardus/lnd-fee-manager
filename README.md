@@ -43,6 +43,7 @@ In `.env` config file or `docker-compose` environment:
 | TLS_CERT_PATH | path to the TLS certificate of LND            | "./lnd/tls.cert"          |
 | LOG_LEVEL     | Log level (winston logging)                   | "info"                    |
 | UPDATE_CMD    | Script to be executed on channel updates      | "run-charge"              |
+| TIME_WINDOW   | Inactivity window in seconds                  | 60                        |
 
 > [!NOTE]
 > LND_DIR is obsolete when using TLS_CERT_PATH and MACROON_PATH

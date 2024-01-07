@@ -12,6 +12,7 @@ import {
   complementDatabase,
   updateAffectedChannels,
 } from "./database-manager.js";
+import { TIME_WINDOW } from "./settings-provider.js";
 
 const updateLiquidity = async (channelDict) => {
   logger.debug("Update Liquidity");
@@ -58,8 +59,11 @@ const run = async () => {
       if (myChannels.length) {
         if (updateTimerId) clearTimeout(updateTimerId);
 
-        // give 10s to allow bursts (amp?)
-        updateTimerId = setTimeout(() => updateLiquidity(myChannelDict), 10000);
+        // give TIME_WINDOW seconds to allow bursts (amp?)
+        updateTimerId = setTimeout(
+          () => updateLiquidity(myChannelDict),
+          TIME_WINDOW * 1000
+        );
         logger.debug("Raw response:", { object: response });
 
         for (const c of myChannels) logger.info("Channel:", { object: c });
