@@ -11,7 +11,7 @@ Several configuration files (charge.config) can be found in blogs of the Lightni
 Standing on the shoulders of [accumulator](https://github.com/accumulator). the creator of charge-lnd, this is mainly a wrapper around his work. Where he uses time intervals (scheduling in CRON), this version listens to the gRPC events on the LND gRPC interface. This enables very fast updates, without excessive polling. It also enables easy integration in Docker.  
 In addition, channel updates are stored in a Sqlite database, to analyse activity afterwards.
 
-When an update event (payment or forward transaction) is triggered, a short interval of 10s (hardcoded atm) is build in to await additional updates. This is implemented using a sliding window pattern. Then (after 10s of inactivity) all channels are retrieved and checked for updates. Updates are then stored in the database and `charge-lnd` is called.
+When an update event (payment or forward transaction) is triggered, a short interval of `TIME_WINDOW` (default 60s) is build in to await additional updates. This is implemented using a sliding window pattern. Then (after 10s of inactivity) all channels are retrieved and checked for updates. Updates are then stored in the database and `charge-lnd` is called.
 
 New channels are not directly registered. This functionality has not (yet) been implemented.
 Closed channels are kept in the database.
