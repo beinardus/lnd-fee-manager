@@ -26,6 +26,7 @@ Closed channels are kept in the database.
 
 ```shell
 git clone https://github.com/beinardus/lnd-fee-manager
+cd lnd-fee-manager
 # Edit `docker-compose.yml` with your details.
 docker-compose up -d
 ```
@@ -161,12 +162,14 @@ select c.chan_id, c.peer_alias, u.local_balance, u.remote_balance
       select u2.chan_id, max(u2.id) as id from channel_update u2
       group by u2.chan_id) um on um.chan_id = u1.chan_id and um.id = u1.id) u on u.chan_id = c.chan_id;
 ```
+
 ```
 // Channel updates in a (human readable) time interval
 select u.id, u.chan_id, u.local_balance, u.remote_balance, datetime(time/1000, 'unixepoch') as time2
 from channel_update u
 where time2 between '2023-10-06 13:00' and '2023-10-06 21:00';
 ```
+
 ```
 // Balance updates (compare to previous balance)
 select u1.id, u1.chan_id, u1.local_balance, u2.local_balance, (u1.local_balance - u2.local_balance) as delta

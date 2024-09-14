@@ -14,7 +14,8 @@ services:
       - MACAROON_PATH=/home/charge/.lnd/admin.macaroon
       - TLS_CERT_PATH=/home/charge/.lnd/tls.cert
     depends_on: [lnd]
-    networks: network1
+    networks:
+      - network1
 
 # Join the same network, to access `lnd`
 networks:
