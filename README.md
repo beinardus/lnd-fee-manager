@@ -153,7 +153,7 @@ You are now able to trace the output using:
 Use `sqlite3` to query the database.
 
 ```
-// Show latest channel states including the peer names
+/* Show latest channel states including the peer names */
 select c.chan_id, c.peer_alias, u.local_balance, u.remote_balance
   from channel c
   left join (
@@ -164,14 +164,14 @@ select c.chan_id, c.peer_alias, u.local_balance, u.remote_balance
 ```
 
 ```
-// Channel updates in a (human readable) time interval
+/* Channel updates in a (human readable) time interval */
 select u.id, u.chan_id, u.local_balance, u.remote_balance, datetime(time/1000, 'unixepoch') as time2
 from channel_update u
 where time2 between '2023-10-06 13:00' and '2023-10-06 21:00';
 ```
 
 ```
-// Balance updates (compare to previous balance)
+/* Balance updates (compare to previous balance) */
 select u1.id, u1.chan_id, u1.local_balance, u2.local_balance, (u1.local_balance - u2.local_balance) as delta
 from (
   select a.chan_id, a.id, max(b.id) as prev_id
