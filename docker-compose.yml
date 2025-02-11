@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  lnd-fee-manager:
+    image: lnd-fee-manager
+    container_name: lnd-fee-manager
+    restart: on-failure
+    volumes:
+      - /data/charge-lnd:/app
+      - /data/lnd-data:/home/charge/.lnd:ro
+    environment:
+      - DATABASE_PATH=/app/database.db
+      - LND_DIR=/home/charge/.lnd
+      - GRPC_LOCATION=lnd:10009
+      - MACAROON_PATH=/home/charge/.lnd/admin.macaroon
+      - TLS_CERT_PATH=/home/charge/.lnd/tls.cert
+    depends_on: [lnd]
+    networks:
+      - network1
+
+# Join the same network, to access `lnd`
+networks:
+  network1:
+    name: bitcoin-compose_net
+    external: true
