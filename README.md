@@ -77,6 +77,9 @@ In `.env` config file or `docker-compose` environment:
 
 ### Installation in Umbrel
 
+> [!NOTE]
+> This instructions are not valid for the latest version of Umbrel (umbrelOS 1.4.2). See [issue #2](https://github.com/beinardus/lnd-fee-manager/issues/2) for a temporary workaround.
+
 Locate where Umbrel is installed. Lets call it `UMBREL_ROOT`. Lets assume the directory structure is fixed. We will find the depicted structure:
 
 - UMBREL_ROOT
